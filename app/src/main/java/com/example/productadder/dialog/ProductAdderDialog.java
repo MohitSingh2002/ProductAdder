@@ -72,7 +72,7 @@ public class ProductAdderDialog {
 
     private boolean areVarientsDetailsValid(String varients) {
         if (varients.length() == 0) {
-            return true;
+            return false;
         }
         String[] vs = varients.split("\n");
         Pattern pattern = Pattern.compile("^\\w+(\\s|\\w)+,\\d+$");
