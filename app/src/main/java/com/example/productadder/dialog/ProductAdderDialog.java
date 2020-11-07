@@ -17,15 +17,22 @@ import java.util.regex.Pattern;
 public class ProductAdderDialog {
 
     ProductAdderDialogBinding b;
-    Product product;
+    public Product product;
 
-    public void showDialog(Context context, OnProductAddListener listener) {
+    public static final byte PRODUCT_ADD = 0, PRODUCT_EDIT = 1;
+    byte productType;
+
+    public ProductAdderDialog(byte type) {
+        productType = type;
+    }
+
+    public void showDialog(Context context, String type, OnProductAddListener listener) {
         b = ProductAdderDialogBinding.inflate(
                 LayoutInflater.from(context)
         );
 
         new AlertDialog.Builder(context)
-                .setTitle("Add Peoduct")
+                .setTitle(type + " Product")
                 .setView(b.getRoot())
                 .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
                     @Override
@@ -45,6 +52,20 @@ public class ProductAdderDialog {
                 })
                 .show();
         setupRadioGroup();
+        if (productType == PRODUCT_EDIT) {
+            preFillPreviousDetails();
+        }
+    }
+
+    private void preFillPreviousDetails() {
+        b.name.setText(product.name);
+        b.radioGroupItemBased.check(product.type == Product.WEIGHT_BASED ? R.id.radio_button_weight_based : R.id.radio_button_varient_based);
+        if (product.type == Product.WEIGHT_BASED) {
+            b.pricePerKg.setText(product.pricePerKg + "");
+            b.minQuantity.setText(product.minQty + "");
+        } else {
+            b.varients.setText(product.varientsString());
+        }
     }
 
     private boolean areProductDetailsValid() {
