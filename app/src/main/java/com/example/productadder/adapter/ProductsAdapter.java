@@ -16,17 +16,19 @@ import com.example.productadder.databinding.VarientItemLayoutBinding;
 import com.example.productadder.databinding.WeightItemLayoutBinding;
 import com.example.productadder.model.Product;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     Context context;
-    List<Product> productList;
+    public List<Product> productList, allProductsList;
     public int lastSelectedItemPosition;
 
     public ProductsAdapter(Context context, List<Product> productList) {
         this.context = context;
-        this.productList = productList;
+        allProductsList = productList;
+        this.productList = new ArrayList<>(productList);
     }
 
     @NonNull
@@ -95,6 +97,17 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public int getItemCount() {
         return productList.size();
+    }
+
+    public void filterList(String query) {
+        query = query.toLowerCase();
+        productList = new ArrayList<>();
+        for (Product p : allProductsList) {
+            if (p.name.toLowerCase().contains(query)) {
+                productList.add(p);
+            }
+        }
+        notifyDataSetChanged();
     }
 
     public static class WeightBasedProductViewHolder extends RecyclerView.ViewHolder {

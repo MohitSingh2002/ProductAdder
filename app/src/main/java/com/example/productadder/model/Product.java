@@ -52,5 +52,23 @@ public class Product {
                 .replace(",", "\n");
     }
 
+    public void makeWeightProduct(String name, int pricePerKg, float minQty) {
+        type = WEIGHT_BASED;
+        this.name = name;
+        this.pricePerKg = pricePerKg;
+        this.minQty = minQty;
+    }
+
+    public void makeVarientProduct(String name) {
+        type = VARIENTS_BASED;
+        this.name = name;
+    }
+
+    public String convertMinQtyToWeight(float quantity) {
+        if (minQty < 1) {
+            return (int) (minQty * 1000) + "g";
+        }
+        return (int) (minQty) + "kg";
+    }
 
 }

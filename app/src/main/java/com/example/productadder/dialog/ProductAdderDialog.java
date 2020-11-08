@@ -34,7 +34,7 @@ public class ProductAdderDialog {
         new AlertDialog.Builder(context)
                 .setTitle(type + " Product")
                 .setView(b.getRoot())
-                .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+                .setPositiveButton(type.toUpperCase(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(areProductDetailsValid()) {
@@ -62,7 +62,7 @@ public class ProductAdderDialog {
         b.radioGroupItemBased.check(product.type == Product.WEIGHT_BASED ? R.id.radio_button_weight_based : R.id.radio_button_varient_based);
         if (product.type == Product.WEIGHT_BASED) {
             b.pricePerKg.setText(product.pricePerKg + "");
-            b.minQuantity.setText(product.minQty + "");
+            b.minQuantity.setText("" + product.convertMinQtyToWeight(product.minQty));
         } else {
             b.varients.setText(product.varientsString());
         }
@@ -80,12 +80,14 @@ public class ProductAdderDialog {
                 if (pricePerKg.isEmpty() || minQty.isEmpty() || !minQty.matches("\\d+(kg|g)")) {
                     return false;
                 }
-                product = new Product(name, Integer.parseInt(pricePerKg), extractMinimumQuantity(minQty));
+//                product = new Product(name, Integer.parseInt(pricePerKg), extractMinimumQuantity(minQty));
+                product.makeWeightProduct(name, Integer.parseInt(pricePerKg), extractMinimumQuantity(minQty));
                 return true;
 
             case R.id.radio_button_varient_based:
                 String varients = b.varients.getText().toString().trim();
-                product = new Product(name);
+//                product = new Product(name);
+                product.makeVarientProduct(name);
                 return areVarientsDetailsValid(varients);
         }
         return false;
