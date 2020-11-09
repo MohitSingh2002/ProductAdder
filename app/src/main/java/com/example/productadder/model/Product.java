@@ -49,7 +49,7 @@ public class Product {
         String varients = varientsList.toString();
         return varients.replace("[", "")
                 .replace("]", "")
-                .replace(",", "\n");
+                .replace(", ", "\n");
     }
 
     public void makeWeightProduct(String name, int pricePerKg, float minQty) {

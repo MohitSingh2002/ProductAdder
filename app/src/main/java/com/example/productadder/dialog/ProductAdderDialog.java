@@ -26,18 +26,18 @@ public class ProductAdderDialog {
         productType = type;
     }
 
-    public void showDialog(Context context, String type, OnProductAddListener listener) {
+    public void showDialog(Context context, OnProductAddListener listener) {
         b = ProductAdderDialogBinding.inflate(
                 LayoutInflater.from(context)
         );
 
         new AlertDialog.Builder(context)
-                .setTitle(type + " Product")
+                .setTitle(productType == PRODUCT_ADD ? "Add Product" : "Edit Product")
                 .setView(b.getRoot())
-                .setPositiveButton(type.toUpperCase(), new DialogInterface.OnClickListener() {
+                .setPositiveButton(productType == PRODUCT_ADD ? "ADD" : "EDIT", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(areProductDetailsValid()) {
+                        if(areProductDetailsValid(productType)) {
                             listener.onProductAdded(product);
                         } else {
                             Toast.makeText(context, "Invalid Details!", Toast.LENGTH_SHORT).show();
@@ -68,7 +68,7 @@ public class ProductAdderDialog {
         }
     }
 
-    private boolean areProductDetailsValid() {
+    private boolean areProductDetailsValid(int type) {
         String name = b.name.getText().toString().trim();
         if(name.isEmpty()) {
             return false;
@@ -80,14 +80,20 @@ public class ProductAdderDialog {
                 if (pricePerKg.isEmpty() || minQty.isEmpty() || !minQty.matches("\\d+(kg|g)")) {
                     return false;
                 }
-//                product = new Product(name, Integer.parseInt(pricePerKg), extractMinimumQuantity(minQty));
-                product.makeWeightProduct(name, Integer.parseInt(pricePerKg), extractMinimumQuantity(minQty));
+                if (type == PRODUCT_ADD) {
+                    product = new Product(name, Integer.parseInt(pricePerKg), extractMinimumQuantity(minQty));
+                } else {
+                    product.makeWeightProduct(name, Integer.parseInt(pricePerKg), extractMinimumQuantity(minQty));
+                }
                 return true;
 
             case R.id.radio_button_varient_based:
                 String varients = b.varients.getText().toString().trim();
-//                product = new Product(name);
-                product.makeVarientProduct(name);
+                if (type == PRODUCT_ADD) {
+                    product = new Product(name);
+                } else {
+                    product.makeVarientProduct(name);
+                }
                 return areVarientsDetailsValid(varients);
         }
         return false;

@@ -116,12 +116,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addProduct() {
-        new ProductAdderDialog(ProductAdderDialog.PRODUCT_ADD).showDialog(MainActivity.this , "Add", new ProductAdderDialog.OnProductAddListener() {
+        new ProductAdderDialog(ProductAdderDialog.PRODUCT_ADD).showDialog(MainActivity.this , new ProductAdderDialog.OnProductAddListener() {
             @Override
             public void onProductAdded(Product product) {
 //                    Toast.makeText(MainActivity.this, product.toString(), Toast.LENGTH_LONG).show();
-                list.add(product);
-                adapter.notifyItemInserted(list.size() - 1);
+//                list.add(product);
+//                adapter.notifyItemInserted(list.size() - 1);
+                adapter.productList.add(product);
+                adapter.allProductsList.add(product);
+                adapter.notifyItemInserted(adapter.productList.size() - 1);
             }
 
             @Override
@@ -154,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                         Product productToBeDeleted = adapter.productList.get(adapter.lastSelectedItemPosition);
                         adapter.productList.remove(adapter.lastSelectedItemPosition);
                         adapter.allProductsList.remove(productToBeDeleted);
-                        list.remove(productToBeDeleted);
+//                        list.remove(productToBeDeleted);
                         adapter.notifyItemRemoved(adapter.lastSelectedItemPosition);
                     }
                 })
@@ -171,10 +174,15 @@ public class MainActivity extends AppCompatActivity {
         Product productToBeEdited = adapter.productList.get(adapter.lastSelectedItemPosition);
         ProductAdderDialog productAdderDialog = new ProductAdderDialog(ProductAdderDialog.PRODUCT_EDIT);
         productAdderDialog.product = productToBeEdited;
-        productAdderDialog.showDialog(MainActivity.this, "Edit", new ProductAdderDialog.OnProductAddListener() {
+        productAdderDialog.showDialog(MainActivity.this,  new ProductAdderDialog.OnProductAddListener() {
             @Override
             public void onProductAdded(Product product) {
                 adapter.productList.set(adapter.lastSelectedItemPosition, product);
+//                for (int i=0;i<adapter.allProductsList.size();i++) {
+//                    if (adapter.allProductsList.get(i) == product) {
+//                        adapter.allProductsList.set(i, product);
+//                    }
+//                }
                 adapter.notifyItemChanged(adapter.lastSelectedItemPosition);
                 Toast.makeText(MainActivity.this, "Editted!", Toast.LENGTH_SHORT).show();
             }

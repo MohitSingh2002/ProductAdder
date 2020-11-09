@@ -14,14 +14,12 @@
         android:id="@+id/sort_products"
         android:title="Sort Products"
         android:icon="@drawable/ic_sort"
-        android:iconTint="#FFFFFF"
-        app:showAsAction="always"/>
+        android:iconTint="#FFFFFF"/>
 
     <item
         android:id="@+id/add_product"
-        android:title="Item"
         android:icon="@drawable/ic_baseline_add_24"
         android:iconTint="#FFFFFF"
-        app:showAsAction="always"/>
+        android:title="Add Item" />
 
 </menu>
