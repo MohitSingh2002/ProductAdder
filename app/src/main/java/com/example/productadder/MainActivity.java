@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,7 +22,10 @@ import com.example.productadder.adapter.ProductsAdapter;
 import com.example.productadder.databinding.ActivityMainBinding;
 import com.example.productadder.dialog.ProductAdderDialog;
 import com.example.productadder.model.Product;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,24 +38,31 @@ public class MainActivity extends AppCompatActivity {
     ProductsAdapter adapter;
     private SearchView searchView;
 
+    SharedPreferences sharedPreferences;
+    String sharedPreferencesFile = "com.example.android.productadder";
+    private Gson gson;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        sharedPreferences = getSharedPreferences(sharedPreferencesFile, MODE_PRIVATE);
+        gson = new Gson();
+
         setupProductsList();
 
     }
 
     private void setupProductsList() {
-        list = new ArrayList<>();
-        list.add(new Product("Apple", 5, 5));
-        list.add(new Product("Orange", 6, 7));
-        list.add(new Product("Kiwi", 7, 9));
-        list.add(new Product("Banana", 8, 11));
-        list.add(new Product("Mango", 9, 13));
-        list.add(new Product("Pineapple", 10, 15));
+        list = loadData();
+//        list.add(new Product("Apple", 5, 5));
+//        list.add(new Product("Orange", 6, 7));
+//        list.add(new Product("Kiwi", 7, 9));
+//        list.add(new Product("Banana", 8, 11));
+//        list.add(new Product("Mango", 9, 13));
+//        list.add(new Product("Pineapple", 10, 15));
         adapter = new ProductsAdapter(MainActivity.this, list);
         binding.recyclerView.setAdapter(adapter);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -192,6 +203,25 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Cancel Pressed!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String json = gson.toJson(adapter.productList);
+        editor.putString("list", json);
+        editor.apply();
+    }
+
+    private ArrayList<Product> loadData() {
+        String json = sharedPreferences.getString("list", null);
+        Type type = new TypeToken<ArrayList<Product>>() {}.getType();
+        List<Product> list = gson.fromJson(json, type);
+        if (list == null) {
+            return new ArrayList<>();
+        }
+        return (ArrayList<Product>) list;
     }
 
 }
