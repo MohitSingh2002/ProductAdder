@@ -13,6 +13,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -39,10 +41,12 @@ public class MainActivity extends AppCompatActivity {
     List<Product> list;
     ProductsAdapter adapter;
     private SearchView searchView;
+    public boolean isDragModeOn = false;
 
     SharedPreferences sharedPreferences;
     String sharedPreferencesFile = "com.example.android.productadder";
     private Gson gson;
+    private ItemTouchHelper itemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
         binding.recyclerView.addItemDecoration(
                 new DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         );
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(binding.recyclerView);
+        
+        dragAndDropProducts();
     }
 
     @Override
@@ -115,8 +119,29 @@ public class MainActivity extends AppCompatActivity {
             case R.id.sort_products:
                 sortProductsByName();
                 return true;
+
+            case R.id.drag_products:
+                toggleDragAndDropButton(item);
+                isDragModeOn = !isDragModeOn;
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleDragAndDropButton(MenuItem item) {
+        Drawable icon = item.getIcon();
+        if(isDragModeOn){
+            icon.setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+        } else {
+            icon.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+        }
+        item.setIcon(icon);
+
+        if (isDragModeOn) {
+            itemTouchHelper.attachToRecyclerView(null);
+        } else {
+            itemTouchHelper.attachToRecyclerView(binding.recyclerView);
+        }
     }
 
     private void sortProductsByName() {
@@ -228,20 +253,28 @@ public class MainActivity extends AppCompatActivity {
         return (ArrayList<Product>) list;
     }
 
-    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-            int fromPosition = viewHolder.getAdapterPosition();
-            int toPosition = target.getAdapterPosition();
-            Collections.swap(adapter.productList, fromPosition, toPosition);
-            binding.recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
-            return false;
-        }
+    private void dragAndDropProducts() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int fromPosition = viewHolder.getAdapterPosition();
+                int toPosition = target.getAdapterPosition();
+                Collections.swap(adapter.productList, fromPosition, toPosition);
+                binding.recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
+                return false;
+            }
 
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 
-        }
-    };
+            }
+        };
+        itemTouchHelper = new ItemTouchHelper(simpleCallback);
+//        if (isDragModeOn) {
+//            itemTouchHelper.attachToRecyclerView(binding.recyclerView);
+//        } else {
+//            itemTouchHelper.attachToRecyclerView(null);
+//        }
+    }
 
 }

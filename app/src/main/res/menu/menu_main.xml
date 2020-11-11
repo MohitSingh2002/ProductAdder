@@ -11,6 +11,13 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"/>
 
     <item
+        android:id="@+id/drag_products"
+        android:title="Sort Products"
+        android:icon="@drawable/ic_drag"
+        android:iconTint="#FFFFFF"
+        app:showAsAction="always"/>
+
+    <item
         android:id="@+id/sort_products"
         android:title="Sort Products"
         android:icon="@drawable/ic_sort"
