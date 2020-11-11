@@ -77,13 +77,13 @@ public class ProductAdderDialog {
             case R.id.radio_button_weight_based:
                 String pricePerKg = b.pricePerKg.getText().toString().trim();
                 String minQty = b.minQuantity.getText().toString().trim();
-                if (pricePerKg.isEmpty() || minQty.isEmpty() || !minQty.matches("\\d+(kg|g)")) {
+                if (pricePerKg.isEmpty() || minQty.isEmpty() || !minQty.matches("[+-]?([0-9]*[.])?[0-9]+")) {
                     return false;
                 }
                 if (type == PRODUCT_ADD) {
-                    product = new Product(name, Integer.parseInt(pricePerKg), extractMinimumQuantity(minQty));
+                    product = new Product(name, Integer.parseInt(pricePerKg), Float.parseFloat(minQty));
                 } else {
-                    product.makeWeightProduct(name, Integer.parseInt(pricePerKg), extractMinimumQuantity(minQty));
+                    product.makeWeightProduct(name, Integer.parseInt(pricePerKg), Float.parseFloat(minQty));
                 }
                 return true;
 
@@ -127,11 +127,13 @@ public class ProductAdderDialog {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.radio_button_weight_based) {
+                    b.textMinQtyFormat.setVisibility(View.VISIBLE);
                     b.weightBasedRoot.setVisibility(View.VISIBLE);
                     b.variantsRoot.setVisibility(View.GONE);
                 } else {
                     b.variantsRoot.setVisibility(View.VISIBLE);
                     b.weightBasedRoot.setVisibility(View.GONE);
+                    b.textMinQtyFormat.setVisibility(View.GONE);
                 }
             }
         });

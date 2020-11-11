@@ -71,4 +71,12 @@ public class Product {
         return (int) (minQty) + "kg";
     }
 
+    public String minQtyToWeight(float qty) {
+        StringBuilder builder = new StringBuilder();
+        builder.append((int) Math.floor(qty) + "kg ");
+        qty -= Math.floor(qty);
+        builder.append((int) (qty * 1000) + "g");
+        return builder.toString();
+    }
+
 }

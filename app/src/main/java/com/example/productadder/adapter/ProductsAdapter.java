@@ -59,7 +59,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             WeightItemLayoutBinding b = ((WeightBasedProductViewHolder) holder).b;
             b.nameWeight.setText(product.name);
             b.priceWeight.setText("Rs. " + product.pricePerKg);
-            b.minQtyWeight.setText("MinQty - " + product.minQty);
+            b.minQtyWeight.setText("MinQty - " + product.minQtyToWeight(product.minQty));
 
             showContextMenu(b.getRoot());
         } else {
