@@ -3,10 +3,10 @@
 In this app I learn concepts of RecyclerView, menus, contextual menus, how to show more than one layout in RecyclerView, search implementation in RecyclerView, sorting
 From this project I get to know how to use oops concept in an app
 
-![1](https://user-images.githubusercontent.com/62237653/98506946-9b358180-2282-11eb-9347-53d213396b3c.jpg)
-![2](https://user-images.githubusercontent.com/62237653/98506980-abe5f780-2282-11eb-973a-20d2dcff8360.jpg)
-![3](https://user-images.githubusercontent.com/62237653/98506998-b7392300-2282-11eb-8bbf-0e36dc404e13.jpg)
-![4](https://user-images.githubusercontent.com/62237653/98507009-c324e500-2282-11eb-8c2d-4ca4bd9ba71b.jpg)
-![5](https://user-images.githubusercontent.com/62237653/98507036-cf10a700-2282-11eb-8726-4b5dd1e342a3.jpg)
+![1](https://user-images.githubusercontent.com/62237653/100339425-de704e00-2fff-11eb-8b14-d7eea8daa04e.jpg)
+![2](https://user-images.githubusercontent.com/62237653/100339460-e8924c80-2fff-11eb-98b7-8d8e1844dfd8.jpg)
+![3](https://user-images.githubusercontent.com/62237653/100339495-f1831e00-2fff-11eb-8f81-f3dce3005501.jpg)
+![4](https://user-images.githubusercontent.com/62237653/100339532-fd6ee000-2fff-11eb-8a48-986a06d78ae1.jpg)
+![5](https://user-images.githubusercontent.com/62237653/100339562-05c71b00-3000-11eb-8fe5-4970955e6696.jpg)
 
-Download [APK](https://github.com/MohitSinghFlutter/ProductAdder/releases/download/v1.6/app-debug.apk)
+Download [APK](https://github.com/MohitSinghFlutter/ProductAdder/releases/download/v1.7/app-debug.apk)
