@@ -358,11 +358,11 @@ public class MainActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             Inventory inventory = documentSnapshot.toObject(Inventory.class);
                             list = inventory.productList;
-                            saveDataLocally();
                         } else {
                             list = new ArrayList<>();
                         }
                         setupProductsList();
+                        saveDataLocally();
                         app.hideLoadingDialog();
                     }
                 })
