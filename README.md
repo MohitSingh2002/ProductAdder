@@ -9,4 +9,4 @@ From this project I get to know how to use oops concept in an app
 ![4](https://user-images.githubusercontent.com/62237653/100339532-fd6ee000-2fff-11eb-8a48-986a06d78ae1.jpg)
 ![5](https://user-images.githubusercontent.com/62237653/100339562-05c71b00-3000-11eb-8fe5-4970955e6696.jpg)
 
-Download [APK](https://github.com/MohitSinghFlutter/ProductAdder/releases/download/v1.7/app-debug.apk)
+Download [APK](https://github.com/MohitSinghFlutter/ProductAdder/releases/download/v1.8/app-debug.apk)
