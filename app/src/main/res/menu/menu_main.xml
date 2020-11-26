@@ -12,9 +12,8 @@
 
     <item
         android:id="@+id/drag_products"
-        android:title="Sort Products"
+        android:title="Drag Products"
         android:icon="@drawable/ic_drag"
-        android:iconTint="#FFFFFF"
         app:showAsAction="always"/>
 
     <item

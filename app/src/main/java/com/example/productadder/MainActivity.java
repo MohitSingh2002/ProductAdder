@@ -16,16 +16,19 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.productadder.adapter.ProductsAdapter;
+import com.example.productadder.constants.Constants;
 import com.example.productadder.databinding.ActivityMainBinding;
 import com.example.productadder.dialog.ProductAdderDialog;
+import com.example.productadder.model.Inventory;
 import com.example.productadder.model.Product;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     String sharedPreferencesFile = "com.example.android.productadder";
     private Gson gson;
     private ItemTouchHelper itemTouchHelper;
+    private MyApp app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +61,20 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(sharedPreferencesFile, MODE_PRIVATE);
         gson = new Gson();
 
-        setupProductsList();
+        setup();
+
+        loadPreviousData();
+
+//        setupProductsList();
 
     }
 
+    private void setup() {
+        app = (MyApp) getApplicationContext();
+    }
+
     private void setupProductsList() {
-        list = loadData();
+//        list = loadData();
 //        list.add(new Product("Apple", 5, 5));
 //        list.add(new Product("Orange", 6, 7));
 //        list.add(new Product("Kiwi", 7, 9));
@@ -75,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         binding.recyclerView.addItemDecoration(
                 new DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         );
-        
+
         dragAndDropProducts();
     }
 
@@ -234,25 +246,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String json = gson.toJson(adapter.productList);
-        editor.putString("list", json);
-        editor.apply();
-    }
-
-    private ArrayList<Product> loadData() {
-        String json = sharedPreferences.getString("list", null);
-        Type type = new TypeToken<ArrayList<Product>>() {}.getType();
-        List<Product> list = gson.fromJson(json, type);
-        if (list == null) {
-            return new ArrayList<>();
-        }
-        return (ArrayList<Product>) list;
-    }
-
     private void dragAndDropProducts() {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
             @Override
@@ -275,6 +268,112 @@ public class MainActivity extends AppCompatActivity {
 //        } else {
 //            itemTouchHelper.attachToRecyclerView(null);
 //        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Unsaved changes")
+                .setMessage("Do you want to save ?")
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        saveDataToDB();
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .show();
+    }
+
+    private void saveDataToDB() {
+        if (app.isOffline()) {
+            app.showToast(MainActivity.this, "No Interner");
+            return;
+        }
+
+        app.showLoadingDialog(MainActivity.this);
+
+        Inventory inventory = new Inventory(list);
+
+        app.db.collection(Constants.INVENTORY).document(Constants.PRODUCTS)
+                .set(inventory)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(MainActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
+
+                        saveDataLocally();
+
+                        app.hideLoadingDialog();
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "Failed to save on cloud!", Toast.LENGTH_SHORT).show();
+                        app.hideLoadingDialog();
+                        finish();
+                    }
+                });
+
+    }
+
+    private void saveDataLocally() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String json = gson.toJson(adapter.productList);
+        editor.putString("list", json);
+        editor.apply();
+    }
+
+    private void loadPreviousData() {
+        String json = sharedPreferences.getString("list", null);
+        if (json != null) {
+            Type type = new TypeToken<ArrayList<Product>>() {}.getType();
+            list = gson.fromJson(json, type);
+            setupProductsList();
+        } else {
+            fetchFrmCloud();
+        }
+    }
+
+    private void fetchFrmCloud() {
+        if (app.isOffline()) {
+            app.showToast(MainActivity.this, "No Internet");
+            return;
+        }
+
+        app.showLoadingDialog(MainActivity.this);
+
+        app.db.collection(Constants.INVENTORY).document(Constants.PRODUCTS)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            Inventory inventory = documentSnapshot.toObject(Inventory.class);
+                            list = inventory.productList;
+                            saveDataLocally();
+                        } else {
+                            list = new ArrayList<>();
+                        }
+                        setupProductsList();
+                        app.hideLoadingDialog();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "Unable to load from cloud!", Toast.LENGTH_SHORT).show();
+                        app.hideLoadingDialog();
+                    }
+                });
+
     }
 
 }
