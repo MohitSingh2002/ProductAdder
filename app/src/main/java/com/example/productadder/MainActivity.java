@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -29,6 +30,7 @@ import com.example.productadder.model.Product;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        FirebaseMessaging.getInstance().subscribeToTopic(Constants.ADMIN_TOPIC);
 
         sharedPreferences = getSharedPreferences(sharedPreferencesFile, MODE_PRIVATE);
         gson = new Gson();
@@ -136,8 +140,16 @@ public class MainActivity extends AppCompatActivity {
                 toggleDragAndDropButton(item);
                 isDragModeOn = !isDragModeOn;
                 return true;
+
+            case R.id.all_orders:
+                showAllOrders();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showAllOrders() {
+        startActivity(new Intent(MainActivity.this, AllOrdersActivity.class));
     }
 
     private void toggleDragAndDropButton(MenuItem item) {
