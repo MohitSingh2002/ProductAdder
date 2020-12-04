@@ -79,6 +79,7 @@ public class AllOrdersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void setupProductsView(OrderDetailLayoutBinding b, Order order) {
+        b.allOrderItems.removeAllViews();
         for (int i = 0; i< order.orderItems.size(); i++) {
             OrderItemsListBinding bindingNew = OrderItemsListBinding.inflate(LayoutInflater.from(context));
             bindingNew.itemName.setText("" + order.orderItems.get(i).name);
